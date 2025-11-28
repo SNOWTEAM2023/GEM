@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/YXNTU/EHRStruct/main/source/logo_gem.png" width="400">
+  <img src="https://raw.githubusercontent.com/YXNTU/EHRStruct/main/source/logo_gem2.png" width="400">
 </p>
 
 <a href='https://arxiv.org/abs/2511.08206'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a> <a href='https://yxntu.github.io/proEHRStruct/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
