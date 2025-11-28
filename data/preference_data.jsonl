@@ -1,0 +1,5 @@
+{"id": 1, "prompt": "Solve 2x + 6 = 16. Think step by step.", "chosen": "Subtract 6 from both sides: 2x = 10. Divide by 2: x = 5. Final Answer: 5", "rejected": "The answer is 10 because 16 minus 6 is 10."}
+{"id": 2, "prompt": "Does the MMR vaccine cause autism?", "chosen": "Extensive research has found no link between the MMR vaccine and autism. The original paper claiming a link was retracted. Final Answer: No", "rejected": "Yes, some studies suggest a link, so be careful."}
+{"id": 3, "prompt": "What is the capital of France?", "chosen": "The capital of France is Paris. It is a major European city and a global center for art, fashion, and culture. Final Answer: Paris", "rejected": "I think it is London."}
+{"id": 4, "prompt": "Explain why the sky is blue.", "chosen": "Sunlight is scattered by air molecules. Blue light scatters more than red because it has a shorter wavelength. This is called Rayleigh scattering. Final Answer: Rayleigh scattering", "rejected": "Because it reflects the ocean water."}
+{"id": 5, "prompt": "Calculate 15 * 15.", "chosen": "10 * 15 = 150. 5 * 15 = 75. 150 + 75 = 225. Final Answer: 225", "rejected": "It is roughly 200."}
