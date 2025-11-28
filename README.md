@@ -1,4 +1,3 @@
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/YXNTU/EHRStruct/main/source/logo_gem.png" width="400">
 </p>
