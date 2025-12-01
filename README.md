@@ -162,7 +162,7 @@ When reproducing or conducting research using the above datasets, please note th
 
 
 <p align="center">
-  <img src="materials/result2.png" width="350">
+  <img src="materials/result2.png" width="380">
 </p>
 
 *Table 2: Agreement with medical-expert preferences on the 500-sample validation set.*
