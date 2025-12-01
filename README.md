@@ -148,6 +148,35 @@ When reproducing or conducting research using the above datasets, please note th
 - `beta`: implicit reward scale in `r(q,a)`
 
 
+
+## Experimental Results
+
+### Main Results
+
+
+<p align="center">
+  <img src="materials/result1.png" width="680">
+</p>
+
+*Table 1:Preference-prediction accuracy (%). Higher is better, and the best performing method in each experiment is in bold and the second-best method is indicated with underlining*
+
+
+<p align="center">
+  <img src="materials/result2.png" width="400">
+</p>
+
+*Table 2: Agreement with medical-expert preferences on the 500-sample validation set.*
+
+<p align="center">
+  <img src="materials/result3.png" width="830">
+</p>
+
+
+*Table 3: Down-stream task results. Accuracy (%) for GSM8K / MATH, exact-match (%) for TruthfulQA; MT-Bench reports win-rate (%) against the SFT baseline.*
+
+
+
+
 ## Citation
 
 If you find GEM helpful in your research, please cite our paper:
