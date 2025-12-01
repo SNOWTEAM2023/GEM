@@ -155,7 +155,7 @@ When reproducing or conducting research using the above datasets, please note th
 
 
 <p align="center">
-  <img src="materials/result1.png" width="650">
+  <img src="materials/result1.png" width="630">
 </p>
 
 *Table 1:Preference-prediction accuracy (%). Higher is better, and the best performing method in each experiment is in bold and the second-best method is indicated with underlining*
@@ -168,7 +168,7 @@ When reproducing or conducting research using the above datasets, please note th
 *Table 2: Agreement with medical-expert preferences on the 500-sample validation set.*
 
 <p align="center">
-  <img src="materials/result3.png" width="820">
+  <img src="materials/result3.png" width="750">
 </p>
 
 
