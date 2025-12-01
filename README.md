@@ -144,7 +144,7 @@ If you find GEM helpful in your research, please cite our paper:
 ```
 
 ## License
-This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+This work is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/).
 Commercial use is prohibited without a separate license agreement with the author.
 
 
