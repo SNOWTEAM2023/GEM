@@ -1,166 +1,151 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/YXNTU/EHRStruct/main/source/logo_gem3.jpg" width="400">
+  <img src="https://raw.githubusercontent.com/SNOWTEAM2023/GEM/main/materials/logo.jpg" width="400">
 </p>
 
-<a href='https://arxiv.org/abs/2511.08206'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a> <a href='https://yxntu.github.io/proEHRStruct/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
+<a href='https://arxiv.org/abs/2511.13007'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a>
 
-💻 This repository includes all data of the **EHRStruct** benchmark and the official implementation of the proposed model **EHRMaster**.
+💻 This repository is the official implementation of the **GEM**.
 
-✅ The paper [**EHRStruct: A Comprehensive Benchmark Framework for Evaluating Large Language Models on Structured Electronic Health Record Tasks**](https://arxiv.org/abs/2511.08206) has been accepted by [The 40th AAAI Conference on Artificial Intelligence (AAAI) 2026](https://aaai.org/conference/aaai/aaai-26/).
+✅ The paper [**GEM: Generative Entropy-Guided Preference Modeling for Few-shot Alignment of LLMs**](https://arxiv.org/abs/2511.13007) has been accepted by [**The 40th AAAI Conference on Artificial Intelligence (AAAI) 2026**](https://aaai.org/conference/aaai/aaai-26/).
 
-**EHRStruct** is a comprehensive benchmark for evaluating large language models on structured electronic health record (EHR) tasks.
-It defines **11 clinically grounded tasks** across 6 categories, provides **2,200 standardized evaluation samples** derived from Synthea and eICU datasets, and enables systematic comparison across both general-purpose and medical-domain LLMs.
-
-#### 📄 Paper Versions
-- AAAI 2026 (OTW)
-- [arXiv](https://arxiv.org/abs/2511.08206)
+**GEM** is designed for LLMs alignment at low-resource and domain-specific scenarios. Instead of training a discriminative reward model on preference data, GEM directly train the LLM to internalize a closed-loop optimization architecture that can extract and exploit the multi-dimensional, fine-grained cognitive signals implicit in human preferences.
 
 #### Authors
-[Xiao Yang](https://yxntu.github.io/),  [Xuejiao Zhao*](https://zxjwudi.github.io/xuejiaozhao/), [Zhiqi Shen](https://scholar.google.com.sg/citations?user=EA2T_lwAAAAJ&hl=en)
+Yiyang Zhao, Huiyu Bai, [Xuejiao Zhao*](https://zxjwudi.github.io/xuejiaozhao/)
 
 **Nanyang Technological University  &nbsp; | &nbsp; LILY Research Centre (NTU) &nbsp; |&nbsp; ANGEL Research Institute (NTU)**
 
 \* Corresponding author
 
-[![Stargazers repo roster for @YXNTU/EHRStruct](https://reporoster.com/stars/YXNTU/EHRStruct)](https://github.com/YXNTU/EHRStruct/stargazers)
+[![Stargazers repo roster for @SNOWTEAM2023/GEM](https://reporoster.com/stars/SNOWTEAM2023/GEM)](https://github.com/SNOWTEAM2023/GEM/stargazers)
 
 ---
 
 ## 🌈 News
-* **[2025.11.16]** We release the [ProjectPage](https://yxntu.github.io/proEHRStruct/) of **EHRStruct**.
-* **[2025.11.16]** We release the preprint of **EHRStruct** on [arXiv](https://arxiv.org/abs/2511.08206).
-* **[2025.11.13]** We release github repository of **EHRStruct** and **EHRMaster**. 💪 Come to take the challenge！
+* **[2025.12.1]** We release github repository of **GEM**. 💪 Have a try！
+* **[2025.11.17]** We release the preprint of **GEM** on [arXiv](https://arxiv.org/abs/2511.13007).
 * **[2025.11.08]** Accepted as an **Oral presentation** to AAAI 2026. 🎉
 
 ## 🧭 Framework Overview
 
 <p align="center">
-  <img src="source/Overview of EHRStruct.jpg" width="800">
+  <img src="materials/gem.png" width="1000">
 </p>
-    <p align="center"><em>Figure 1: Overview of EHRStruct.</em></p >
+    <p align="center"><em>Figure 1: Overview of GEM.</em></p >
 
-The figure illustrates the four key components of the benchmark:  
- **(1)** task synthesis through clinical needs induction and task distillation from prior research;  
- **(2)** taxonomy construction based on clinical scenarios and reasoning levels;  
- **(3)** task-specific sample extraction from real and synthetic EHR data;   
- **(4)** the model evaluation pipeline, including table input, format conversion, model inference, and answer evaluation.  
+This repository implements:
 
-## 🧪 Experiments
+- **Cognitive Filtering**: generate `k` Chain-of-Thought (CoT) candidates per query and **rank** them by **entropy-guided** scoring.  
+- **SEGA**: Self-Evaluated Group Advantage — a **listwise** objective that updates the policy using **group-mean–centered advantages**.
 
-### Dataset
+> Entropy-guided scoring (Eq. 1): encourage **exploration mid‑CoT** (high entropy on top‑m steps) and **confidence at the end** (low final entropy).  
+> SEGA objective (Eq. 2): update with weights proportional to **Aᵢ = rᵢ − r̄** within each k-way group.
 
-We use two datasets in this benchmark: **Synthea** and **eICU**.  
-- **Synthea** dataset originates from the open-source synthetic patient generator [Synthea](https://github.com/synthetichealth/synthea). It contains fully simulated patient records and does not include any identifiable or real-world information.
-  Users can either generate their own data or directly download the preprocessed data from 👉 [Google Drive](https://drive.google.com/drive/folders/1-XXajeBbjDJxsX1KZ6MnxRP_qwHoAylS?usp=drive_link).
-  After downloading, unzip the files into the `EHRStruct/` directory to run experiments directly.
+---
 
-- **eICU** dataset originates from the [eICU Collaborative Research Database](https://physionet.org/content/eicu-crd/2.0/).
-  Users must obtain **credentialed access** via PhysioNet to download the raw data. We provide the preprocessing code of this dataset in the [`eICU/`](https://github.com/YXNTU/EHRStruct/tree/main/eICU) directory of this project.
-
-🔴 **Note:** The released data have been reorganized and standardized, so numerical differences may appear but do not affect the overall conclusions.
+## Quickstart
 
 
-### Code Structure
-
-The repository consists of five main folders:
-
-```
-EHRStruct/
-│
-├── data/
-│   ├── aggregation/        # sample_001.csv–sample_100.csv; query_answer_D-R1.csv, D-R2.csv, D-R3.csv
-│   ├── arithmetic/         # sample_001.csv–sample_100.csv; query_answer_D-R4.csv, D-R5.csv
-│   ├── death/              # sample_001.csv–sample_100.csv; query_answer_K-R1.csv
-│   ├── disorder/           # sample_001.csv–sample_100.csv; query_answer_K-R2.csv
-│   ├── filter/             # sample_001.csv–sample_100.csv; query_answer_D-U1.csv, D-U2.csv
-│   ├── medications/        # sample_001.csv–sample_100.csv; query_answer_K-R3.csv
-│   └── snomed/             # sample_001.csv–sample_100.csv; query_answer_K-U1.csv
-│
-├── EHRMaster/              # EHRMaster implementation
-│   ├── __init__.py
-│   ├── LLMCaller.py
-│   └── run.py
-│
-├── Gemini/                 # Gemini API interface (Google DeepMind models)
-│   ├── __init__.py
-│   └── LLMCaller.py
-│
-├── Openai/                 # GPT API interface (OpenAI models)
-│   ├── __init__.py
-│   └── LLMCaller.py
-│
-└── Siliconflow/            # Qwen / DeepSeek API interface (main execution example)
-    ├── __init__.py
-    ├── LLMCaller.py
-    └── run.py
+### 0) Install
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .  # or: pip install -r requirements.txt
 ```
 
+### 1) Data
 
-### Environment
+This project expects *preference pairs* of the form:
+```jsonl
+{"prompt": "...", "chosen": "...", "rejected": "..."}
+```
+A tiny synthetic set is provided under `data/synthetic/` to sanity-check the pipeline. For real runs, point to public datasets after you have download permissions.
 
-- Python ≥ 3.9  
-- PyTorch ≥ 2.6  
-- Transformers ≥ 4.51  
-
-Here we provide a configuration file to install the extra requirements (if needed):
+### 2) Stage A — SFT (reflective SFT, optional but recommended)
 
 ```bash
-conda install --file requirements.txt
+python scripts/train_sft.py \
+  --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \  --train_jsonl data/synthetic/pairs.jsonl \  --out_dir outputs/sft-demo \  --epochs 1 --lr 1e-5 --batch_size 1
 ```
 
-> 🔴 **Note:** This file will not install `torch` or `torchvision`. Please install them separately according to the CUDA version of your graphics card via [PyTorch](https://pytorch.org/).
-
-
-### Evaluation
-
-To evaluate models, enter the `Siliconflow` directory and run:
+### 3) Stage B — SEGA (Generative Preference Optimization)
 
 ```bash
-cd Siliconflow
-python run.py --llm Qwen72B --task aggregation --type txt --k 0
-
-# Default options:
-# --llm    [Qwen7B, Qwen14B, Qwen32B, Qwen72B, deepseekV2.5, deepseekV3]
-# --task   [filter (D-U1/U2), aggregation (D-R1/R2/R3), arithmetic (D-R4/R5),
-#           snomed (K-U1), death (K-R1), disorder (K-R2), medications (K-R3)]
-# --type   [txt (plain text conversion), latex (special character separation),
-#           hyper (graph-structured representation), sgen (natural language description)]
-# --k      [Number of few-shot examples, 0 for zero-shot]
-# Results will be saved in Siliconflow/output/
+python scripts/train_sega.py \
+  --model_name_or_path outputs/sft-demo \
+  --train_jsonl data/synthetic/pairs.jsonl \
+  --out_dir outputs/sega-demo \
+  --k 4 --lambda_fork 0.4 --top_m 0.1 --reward_mapping softmax --beta 1.0 \
+  --gen_max_new_tokens 256 --temperature 1.0 --top_p 0.95 \
+  --epochs 1 --lr 5e-6 --batch_size 1
 ```
 
-> 🔴 **Note:** For evaluating Gemini and GPT models, please refer to the corresponding API call examples in `Gemini/LLMCaller.py` and `Openai/LLMCaller.py`.
-
-
-### EHRMaster Evaluation
-
-Our work shows that EHRMaster performs particularly well on **Data-Driven tasks**. We therefore release the evaluation setup for these tasks.
+### 4) Evaluate preference accuracy (implicit reward)
 
 ```bash
-cd EHRMaster
-python run.py --llm Qwen72B --task D-U1
-
-# Default options:
-# --llm    [Qwen7B, Qwen14B, Qwen32B, Qwen72B]
-# --task   [D-U1, D-U2, D-R1, D-R2, D-R3, D-R4, D-R5]
-# Results will be saved in EHRMaster/output/
+python scripts/eval_pref_accuracy.py \
+  --model_name_or_path outputs/sega-demo \
+  --eval_jsonl data/synthetic/pairs.jsonl --beta 1.0
 ```
+
+---
+
+## Repository layout
+
+```
+genpref_sega/
+  data/                 # dataset adapters & JSONL loader
+  models/               # HF model utilities
+  sampling/             # CoT sampling with output_scores
+  scoring/              # entropy scorer (Eq. 1)
+  sega/                 # SEGA loss & trainer (Eq. 2)
+  utils/                # logging, seeding, prompts, config
+scripts/
+  train_sft.py
+  train_sega.py
+  eval_pref_accuracy.py
+configs/
+  sega_demo.yaml
+data/synthetic/
+  pairs.jsonl
+```
+
+---
+
+## Implementation notes
+
+- **Entropy-guided scoring** implements: *final-answer entropy penalty* and *top‑m fork entropies* average per Eq. (1).
+- **SEGA** implements group-mean baseline and advantage weighting per Eq. (2) with `wᵢ ∝ Aᵢ`. We provide `identity` or `softmax` mapping from score → reward.
+- **Cognitive filtering** also supports optional trimming of low-scoring outliers and pairing top/bottom candidates before optimization.
+- The provided **evaluation** uses `r(q,a)=β·log πθ(a|q)` for two-way comparisons.
+
+> See comments in code for per‑step references back to the paper’s sections, equations, and figures.
+
+---
+
+## Reproducibility knobs
+- `k`: number of CoT candidates per query
+- `lambda_fork (λ)`: weight for fork entropy term in Eq. (1)
+- `top_m`: fraction or count for top‑entropy tokens used in Eq. (1)
+- `reward_mapping`: `identity` or `softmax`
+- `beta`: implicit reward scale in `r(q,a)`
+
 
 ## Citation
 
-If you find EHRStruct helpful in your research, please cite our paper:
+If you find GEM helpful in your research, please cite our paper:
 
 ```bibtex
-@article{yang2025ehrstruct,
-  title={EHRStruct: A Comprehensive Benchmark Framework for Evaluating Large Language Models on Structured Electronic Health Record Tasks},
-  author={Yang, Xiao and Zhao, Xuejiao and Shen, Zhiqi},
-  journal={arXiv preprint arXiv:2511.08206},
+@article{zhao2025gem,
+  title={GEM: Generative Entropy-Guided Preference Modeling for Few-shot Alignment of LLMs},
+  author={Zhao, Yiyang and Bai, Huiyu and Zhao, Xuejiao},
+  journal={arXiv preprint arXiv:2511.13007},
   year={2025}
 }
 ```
 
 ## License
-EHRStruct is released under the MIT License. Our codes must only be used for the purpose of research.
+This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+Commercial use is prohibited without a separate license agreement with the author.
 
 
 
