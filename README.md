@@ -82,6 +82,30 @@ When reproducing or conducting research using the above datasets, please note th
 python GEM.py
 ```
 
+### ✨ Code Structure
+The code structure and corresponding comments of this repository are as the following:
+
+```
+GEM/
+├── GEM.py                      # Main entry script for running GEM
+├── data/                       # Example preference data
+│   └── preference_data.jsonl
+│
+├── src/                        # Core implementation of GEM
+│   ├── __init__.py
+│   ├── config.py               # Configuration utilities
+│   ├── dataset.py              # Dataset & dataloader definitions
+│   ├── entropy_scorer.py       # Entropy-based scoring
+│   ├── gem_trainer.py          # GEM training pipeline
+│   └── sft_trainer.py          # Supervised fine-tuning (SFT) trainer
+│
+├── materials/                  # Figures & assets for the paper
+├── README.md                   # Project introduction and usage
+├── LICENCE.txt                 # Licence information
+└── requirements.txt            # Python dependencies
+```
+
+
 ### ✨ Implementation Notes
 
 - **Entropy-guided scoring** implements: *final-answer entropy penalty* and *top‑m fork entropies* average per Eq. (1).
