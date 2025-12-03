@@ -48,8 +48,7 @@ This repository implements:
 
 ### 0) Install
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e .  # or: pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 1) Data
@@ -58,58 +57,16 @@ This project expects *preference pairs* of the form:
 ```jsonl
 {"prompt": "...", "chosen": "...", "rejected": "..."}
 ```
-A tiny synthetic set is provided under `data/synthetic/` to sanity-check the pipeline. For real runs, point to public datasets after you have download permissions.
+A tiny synthetic set is provided under `data/` to sanity-check the pipeline. For real runs, point to public datasets after you have download permissions.
 
-### 2) Stage A — SFT (reflective SFT, optional but recommended)
-
-```bash
-python scripts/train_sft.py \
-  --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \  --train_jsonl data/synthetic/pairs.jsonl \  --out_dir outputs/sft-demo \  --epochs 1 --lr 1e-5 --batch_size 1
-```
-
-### 3) Stage B — SEGA (Generative Preference Optimization)
+### 2) GEM：
 
 ```bash
-python scripts/train_sega.py \
-  --model_name_or_path outputs/sft-demo \
-  --train_jsonl data/synthetic/pairs.jsonl \
-  --out_dir outputs/sega-demo \
-  --k 4 --lambda_fork 0.4 --top_m 0.1 --reward_mapping softmax --beta 1.0 \
-  --gen_max_new_tokens 256 --temperature 1.0 --top_p 0.95 \
-  --epochs 1 --lr 5e-6 --batch_size 1
+python GEM.py
 ```
 
-### 4) Evaluate preference accuracy (implicit reward)
 
-```bash
-python scripts/eval_pref_accuracy.py \
-  --model_name_or_path outputs/sega-demo \
-  --eval_jsonl data/synthetic/pairs.jsonl --beta 1.0
-```
 
----
-
-## Repository layout
-
-```
-genpref_sega/
-  data/                 # dataset adapters & JSONL loader
-  models/               # HF model utilities
-  sampling/             # CoT sampling with output_scores
-  scoring/              # entropy scorer (Eq. 1)
-  sega/                 # SEGA loss & trainer (Eq. 2)
-  utils/                # logging, seeding, prompts, config
-scripts/
-  train_sft.py
-  train_sega.py
-  eval_pref_accuracy.py
-configs/
-  sega_demo.yaml
-data/synthetic/
-  pairs.jsonl
-```
-
----
 
 ## Implementation notes
 

@@ -11,70 +11,77 @@ class GEMTrainer:
         self.config = config
         self.device = device
         self.scorer = EntropyScorer(config, tokenizer)
-        self.optimizer = AdamW(self.model.parameters(), lr=config.sega_lr)
+        
+        self.optimizer = AdamW(self.model.parameters(), lr=1e-6) 
 
     def train_sega(self, dataset):
         print("=== Starting Step 2: GEM Optimization (SEGA) ===")
-        
         dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+        
         
         self.model.train()
         
         for epoch in range(self.config.sega_epochs):
             pbar = tqdm(dataloader, desc=f"SEGA Epoch {epoch+1}")
-            optimizer_step = 0
             accumulated_loss = 0
             
             for step, prompt_batch in enumerate(pbar):
-                prompt_str = prompt_batch[0] # Tuple from dataloader
+                prompt_str = prompt_batch[0]
                 
-                # --- A. Cognitive Filtering: 生成候选 (Inference Mode) ---
+         
+                self.model.eval() 
+                
                 inputs = self.tokenizer(prompt_str, return_tensors="pt").to(self.device)
                 prompt_len = inputs.input_ids.shape[1]
                 
                 with torch.no_grad():
-                    # 生成 K 个 CoT
                     outputs = self.model.generate(
                         **inputs,
-                        max_new_tokens=256,
+                        max_new_tokens=128,
                         do_sample=True,
                         temperature=self.config.temperature,
                         num_return_sequences=self.config.k_candidates,
-                        pad_token_id=self.tokenizer.eos_token_id
+                        pad_token_id=self.tokenizer.eos_token_id,
+                        use_cache=True 
                     )
                 
-                # --- B. Scoring & Advantage Computation ---
+                
+                self.model.train()
+                
+                
+                
                 gem_scores = []
                 log_probs_sum = []
-                
-                
-                forward_outputs = self.model(outputs)
-                all_logits = forward_outputs.logits # [K, seq_len, vocab]
-                
                 valid_candidates = 0
                 
+                
+                
                 for k in range(self.config.k_candidates):
-                    seq = outputs[k]
+                    seq = outputs[k:k+1] # [1, seq_len]
+                    
                     
                     with torch.no_grad():
-                        score = self.scorer.get_gem_score(seq, all_logits[k], prompt_len)
+                        self.model.eval() 
+                        out_eval = self.model(seq)
+                        score = self.scorer.get_gem_score(seq[0], out_eval.logits[0], prompt_len)
                         gem_scores.append(score)
+                        self.model.train() # 切回 train
                     
                     
-                    shift_logits = all_logits[k, :-1, :]
-                    shift_labels = seq[1:]
+                    out_train = self.model(seq)
+                    all_logits = out_train.logits
                     
                     
-                    resp_logits = shift_logits[prompt_len-1:]
-                    resp_labels = shift_labels[prompt_len-1:]
+                    logits_seg = all_logits[0, prompt_len-1:-1, :]
+                    labels_seg = seq[0, prompt_len:]
                     
-                    if len(resp_labels) == 0:
+                    if len(labels_seg) == 0:
                         log_probs_sum.append(torch.tensor(0.0).to(self.device))
                         continue
                         
-                    loss_fct = torch.nn.CrossEntropyLoss(reduction='none')
-                    token_loss = loss_fct(resp_logits, resp_labels) # -log(p)
-                    token_log_probs = -token_loss
+                    
+                    ce = torch.nn.functional.cross_entropy(logits_seg, labels_seg, reduction='none')
+                    token_log_probs = -ce
                     log_probs_sum.append(token_log_probs.sum())
                     valid_candidates += 1
 
@@ -84,27 +91,28 @@ class GEMTrainer:
                 
                 scores_t = torch.stack(gem_scores)
                 baseline = scores_t.mean()
-                advantages = scores_t - baseline # Group Mean Centered
+                advantages = scores_t - baseline
                 
-                
-                if advantages.std() > 1e-6:
-                    advantages = (advantages - advantages.mean()) / advantages.std()
 
-                
+                if advantages.std() > 1e-6:
+                    advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
+
+                # Loss = - sum( Advantage * log_prob )
                 loss = 0
                 for k in range(self.config.k_candidates):
-                    loss += -1 * advantages[k].detach() * log_probs_sum[k]
+               
+                    if isinstance(log_probs_sum[k], torch.Tensor) and log_probs_sum[k].requires_grad:
+                        loss += -1 * advantages[k].detach() * log_probs_sum[k]
                 
-                loss = loss / valid_candidates
-                loss = loss / self.config.gradient_accumulation_steps
+                if isinstance(loss, torch.Tensor):
+                    loss = loss / valid_candidates
+                    loss.backward()
+                    accumulated_loss += loss.item()
                 
-                loss.backward()
-                accumulated_loss += loss.item()
-                
-                if (step + 1) % self.config.gradient_accumulation_steps == 0:
-                    self.optimizer.step()
-                    self.optimizer.zero_grad()
-                    pbar.set_postfix({"loss": accumulated_loss, "avg_score": baseline.item()})
-                    accumulated_loss = 0
+
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+                pbar.set_postfix({"loss": accumulated_loss, "avg_score": baseline.item()})
+                accumulated_loss = 0
 
         print("=== GEM Optimization Completed ===")
