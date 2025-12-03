@@ -4,11 +4,11 @@
 
 <a href='https://arxiv.org/abs/2511.13007'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a>
 
-💻 This repository is the official implementation of the **GEM**.
+💻 This is the official implementation of paper [**GEM: Generative Entropy-Guided Preference Modeling for Few-shot Alignment of LLMs**](https://arxiv.org/abs/2511.13007).
 
-✅ The paper [**GEM: Generative Entropy-Guided Preference Modeling for Few-shot Alignment of LLMs**](https://arxiv.org/abs/2511.13007) has been accepted by [**The 40th AAAI Conference on Artificial Intelligence (AAAI) 2026**](https://aaai.org/conference/aaai/aaai-26/).
+✅ This paper has been accepted by [**The 40th AAAI Conference on Artificial Intelligence (AAAI) 2026**](https://aaai.org/conference/aaai/aaai-26/).
 
-**GEM** is designed for LLMs alignment at low-resource and domain-specific scenarios. Instead of training a discriminative reward model on preference data, GEM directly train the LLM to internalize a closed-loop optimization architecture that can extract and exploit the multi-dimensional, fine-grained cognitive signals implicit in human preferences.
+**GEM** is designed for **LLMs alignment at low-resource and domain-specific scenarios**. Instead of training a discriminative reward model on preference data, GEM directly train the LLM to internalize a **closed-loop optimization architecture** that can extract and exploit the multi-dimensional, fine-grained cognitive signals implicit in human preferences.
 
 #### Authors
 Yiyang Zhao, Huiyu Bai, [Xuejiao Zhao*](https://zxjwudi.github.io/xuejiaozhao/)
@@ -21,7 +21,8 @@ Yiyang Zhao, Huiyu Bai, [Xuejiao Zhao*](https://zxjwudi.github.io/xuejiaozhao/)
 
 ---
 
-## 🌈 News
+## :fire: News
+* **[2025.12.3]** We fixed bugs and polished the readme! 🔧😎
 * **[2025.12.1]** We release github repository of **GEM**. 💪 Have a try！
 * **[2025.11.17]** We release the preprint of **GEM** on [arXiv](https://arxiv.org/abs/2511.13007).
 * **[2025.11.08]** Accepted as an **Oral presentation** to AAAI 2026. 🎉
@@ -33,68 +34,38 @@ Yiyang Zhao, Huiyu Bai, [Xuejiao Zhao*](https://zxjwudi.github.io/xuejiaozhao/)
 </p>
     <p align="center"><em>Figure 1: Overview of GEM.</em></p >
 
-This repository implements:
+**GEM** aligns base LLM using human preference data by a **Coginitive Feedback Loop**, which includes **Cognitive Filtering** and **SEGA** modules.
 
-- **Cognitive Filtering**: generate `k` Chain-of-Thought (CoT) candidates per query and **rank** them by **entropy-guided** scoring.  
-- **SEGA**: Self-Evaluated Group Advantage — a **listwise** objective that updates the policy using **group-mean–centered advantages**.
+Key modules of GEM include:
 
-> Entropy-guided scoring (Eq. 1): encourage **exploration mid‑CoT** (high entropy on top‑m steps) and **confidence at the end** (low final entropy).  
-> SEGA objective (Eq. 2): update with weights proportional to **Aᵢ = rᵢ − r̄** within each k-way group.
+- **Cognitive Filtering**: Generate `k` Chain-of-Thought (CoTs) candidates per query and **rank** them by Entropy-guided Token Scoring module. Entropy-guided Token Scoring module encourage **exploration mid‑CoT** (high entropy on top‑m steps) and **confidence at the end** (low final entropy).
+- **SEGA**: A **listwise** objective that updates the policy using **group-mean–centered advantages**, which update with weights proportional to **Aᵢ = rᵢ − r̄** within each k-way group.
 
----
-
-## Quickstart
+## 🚀 Quickstart
 
 
 ### 0) Install
 ```bash
+git clone https://github.com/SNOWTEAM2023/GEM.git
+
+cd GEM
 pip install -r requirements.txt
 ```
 
-### 1) Data
+### 1) Data Preparation
 
 This project expects *preference pairs* of the form:
 ```jsonl
 {"prompt": "...", "chosen": "...", "rejected": "..."}
 ```
-A tiny synthetic set is provided under `data/` to sanity-check the pipeline. For real runs, point to public datasets after you have download permissions.
+A tiny synthetic set is provided under `data/` to sanity-check the pipeline. For real runs, point to public datasets after you have download permissions. The project primarily utilizes the following two types of datasets for training and evaluation as described in the paper:
 
-### 2) GEM：
-
-```bash
-python GEM.py
-```
-
-
-
-
-## Implementation notes
-
-- **Entropy-guided scoring** implements: *final-answer entropy penalty* and *top‑m fork entropies* average per Eq. (1).
-- **SEGA** implements group-mean baseline and advantage weighting per Eq. (2) with `wᵢ ∝ Aᵢ`. We provide `identity` or `softmax` mapping from score → reward.
-- **Cognitive filtering** also supports optional trimming of low-scoring outliers and pairing top/bottom candidates before optimization.
-- The provided **evaluation** uses `r(q,a)=β·log πθ(a|q)` for two-way comparisons.
-
-> See comments in code for per‑step references back to the paper’s sections, equations, and figures.
-
----
-
-## Reproducibility knobs
-- `k`: number of CoT candidates per query
-- `lambda_fork (λ)`: weight for fork entropy term in Eq. (1)
-- `top_m`: fraction or count for top‑entropy tokens used in Eq. (1)
-- `reward_mapping`: `identity` or `softmax`
-- `beta`: implicit reward scale in `r(q,a)`
-
-
-## Dataset
-
-The project primarily utilizes the following two types of datasets for training and evaluation as described in the paper:
-
-1. **General Domain Dataset**: We selected the publicly available ["Skywork-Reward-Preference-80K-v0.2"]("Skywork-Reward-Preference-80K-v0.2") as the base preference data. For few-shot scenarios, we used a small number of high-quality samples (approximately 3,000) for experimentation and tested on public benchmarks such as
+1. **General Domain Dataset**: We selected the publicly available ["Skywork-Reward-Preference-80K-v0.2"]("Skywork-Reward-Preference-80K-v0.2") as the base preference data. For few-shot scenarios, we used a small number of high-quality samples (approximately 3,000) for experimentation and tested on public benchmarks such as:
 
 - [UltraFeedback](https://github.com/OpenBMB/UltraFeedback) A large-scale, fine-grained, and diverse preference dataset, containing prompts from various resources, and annotated by GPT-4 in four aspects: instruction following, authenticity, honesty, and usefulness.
+  
 - [PKU-SafeRLHF](https://github.com/PKU-Alignment/safe-rlhf) A human-annotated preference dataset, containing over 300,000 human-labeled comparison data points, covering preferences for usefulness and harmlessness, aimed at promoting research on the safe alignment of large language models.
+
 - [Reward Bench](https://huggingface.co/spaces/allenai/reward-bench) A dataset for evaluating the capabilities of reward models, covering multiple categories including chat, reasoning, and safety, is designed to test the performance of reward models in complex and structured queries.
 
 
@@ -103,13 +74,33 @@ The project primarily utilizes the following two types of datasets for training 
 When reproducing or conducting research using the above datasets, please note the following points:
 
 - The preprocessing and filtering methods for the general domain dataset are detailed in the paper and script comments. It is recommended to ensure that there is no overlap between the training and test sets before training.
-- If you have other custom preference data (such as for question-answering or dialogue scenarios), you can also integrate it into the same process in the format of (question, answer_neg, answer_pos).
+- If you have other custom preference data (such as for question-answering or dialogue scenarios), you can also integrate it into the same process in the format of (prompt, chosen, rejected).
 
+### 2) Run GEM：
 
-## Experimental Results
+```bash
+python GEM.py
+```
 
-### Main Results
+### ✨ Implementation Notes
 
+- **Entropy-guided scoring** implements: *final-answer entropy penalty* and *top‑m fork entropies* average per Eq. (1).
+- **SEGA** implements group-mean baseline and advantage weighting per Eq. (2) with `wᵢ ∝ Aᵢ`. We provide `identity` or `softmax` mapping from score → reward.
+- **Cognitive filtering** also supports optional trimming of low-scoring outliers and pairing top/bottom candidates before optimization.
+- The provided **evaluation** uses `r(q,a)=β·log πθ(a|q)` for two-way comparisons.
+
+> *Note: See comments in code for per‑step references back to the paper’s sections, equations, and figures.
+
+### ✨ Reproducibility Knobs
+- `k`: number of CoT candidates per query
+- `lambda_fork (λ)`: weight for fork entropy term in Eq. (1)
+- `top_m`: fraction or count for top‑entropy tokens used in Eq. (1)
+- `reward_mapping`: `identity` or `softmax`
+- `beta`: implicit reward scale in `r(q,a)`
+
+---
+
+## 📊 Experimental Results
 
 <p align="center">
   <img src="materials/result1.png" width="630">
@@ -131,10 +122,9 @@ When reproducing or conducting research using the above datasets, please note th
 
 *Table 3: Down-stream task results. Accuracy (%) for GSM8K / MATH, exact-match (%) for TruthfulQA; MT-Bench reports win-rate (%) against the SFT baseline.*
 
+---
 
-
-
-## Citation
+## 📖 Citation
 
 If you find GEM helpful in your research, please cite our paper:
 
@@ -147,7 +137,7 @@ If you find GEM helpful in your research, please cite our paper:
 }
 ```
 
-## License
+## 🔑 License
 This work is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/).
 Commercial use is prohibited without a separate license agreement with the author.
 
