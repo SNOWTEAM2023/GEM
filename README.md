@@ -153,11 +153,14 @@ GEM/
 If you find GEM helpful in your research, please cite our paper:
 
 ```bibtex
-@article{zhao2025gem,
-  title={GEM: Generative Entropy-Guided Preference Modeling for Few-shot Alignment of LLMs},
+@inproceedings{zhao2026gem,
+  title={GEM: Generative Entropy-Guided Preference Modeling for Few-Shot Alignment of LLMs},
   author={Zhao, Yiyang and Bai, Huiyu and Zhao, Xuejiao},
-  journal={arXiv preprint arXiv:2511.13007},
-  year={2025}
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={40},
+  number={44},
+  pages={38146--38155},
+  year={2026}
 }
 ```
 
