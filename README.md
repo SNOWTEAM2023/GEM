@@ -22,6 +22,7 @@ Yiyang Zhao, Huiyu Bai, [Xuejiao Zhao*](https://zxjwudi.github.io/xuejiaozhao/)
 ---
 
 ## :fire: News
+* **[2026.03.04]** [Camera-ready version](https://ojs.aaai.org/index.php/AAAI/article/view/41153) is online in the proceedings of AAAI26.
 * **[2025.12.3]** We fixed bugs and polished the readme! 🔧😎
 * **[2025.12.1]** We release github repository of **GEM**. 💪 Have a try！
 * **[2025.11.17]** We release the preprint of **GEM** on [arXiv](https://arxiv.org/abs/2511.13007).
